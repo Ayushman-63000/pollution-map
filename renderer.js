@@ -25,7 +25,7 @@ function connectWebSocket() {
 }
 
 function initMap() {
-    var map = L.map('map').setView([51.505, -0.09], 13);
+    var map = L.map('map').setView([28.508, 77.11], 13);
 
     // Add ESRI World Imagery tile layer
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
@@ -34,7 +34,7 @@ function initMap() {
     }).addTo(map);
     window.mapInstance = map;
 
-    var circle = L.circle([51.508, -0.11], {
+    var circle = L.circle([28.508, 77.11], {
         color: 'red',
         fillColor: '#f03',
         fillOpacity: 0.2,
