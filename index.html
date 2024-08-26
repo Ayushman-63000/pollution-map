@@ -1,18 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Air Quality Map</title>
+    <title>Serial Port Plotter</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
     <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow-x: hidden;
+
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        .videomap {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+            flex-direction: row;
+        }
+
+        .video,
+        .map-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid white ;
+
+        }
+
+        .video video {
+            width: 100%;
+            height: auto;
+            max-width: 640px;
+            max-height: 480px;
+            border: 2px solid white ;
+        }
+
+        .map-container {
+            width: 100%;
+            height: 100%;
+            border: 2px solid white ;
+
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
 </head>
+
 <body>
     <header>
-        <h1>Air Quality Interface</h1>
+        <img src="assets/logo.png" alt="Application Logo" id="app-logo">
+        <h1>GRAPHICAL USER INTERFACE</h1>
+
     </header>
+    <nav>
+        <ul>
+            <li><a href="#" id="home-button">Home</a></li>
+            <li class="dropdown">
+                <a href="#" class="dropbtn">Charts</a>
+                <div class="dropdown-content">
+                    <a href="#" class="chart-link" data-chart="gyro">Gyroscope</a>
+                    <a href="#" class="chart-link" data-chart="accel">Accelerometer</a>
+                    <a href="#" class="chart-link" data-chart="temp">Temperature</a>
+                    <a href="#" class="chart-link" data-chart="altitude">Altitude</a>
+                    <a href="#" class="chart-link" data-chart="pressure">Pressure</a>
+                    <a href="#" class="chart-link" data-chart="humidity">Humidity</a>
+                    <a href="#" class="chart-link" data-chart="AQI">AQI</a>
+                    <a href="#" class="chart-link" data-chart="smoke">Smoke</a>
+                    <a href="#" class="chart-link" data-chart="speed">Speed</a>
+
+                </div>
+            </li>
+        </ul>
+    </nav>
     <main>
         <div id="controls">
             <select id="port-select"></select>
@@ -21,8 +97,158 @@
         </div>
         <div id="error-message" style="display: none; color: red;"></div>
         <div id="loading-indicator" class="hidden">Loading...</div>
-        <div id="map"></div> <!-- Changed from map-container to map -->
+        <div id="data-display-container">
+            <div id="gyro-display" class="data-display">Waiting for gyro data...</div>
+            <div id="accel-display" class="data-display">Waiting for accelerometer data...</div>
+            <div id="temp-display" class="data-display">Waiting for temperature data...</div>
+        </div>
+        <div id="charts-container">
+            <div id="top-charts">
+                <div class="chart-wrapper">
+                    <canvas id="gyro-chart"></canvas>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="accel-chart"></canvas>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="temp-chart"></canvas>
+                </div>
+            </div>
+            <div id="data-display-container">
+                <div id="altitude-display" class="data-display">Waiting for altitude data...</div>
+                <div id="pressure-display" class="data-display">Waiting for pressure data...</div>
+                <div id="humidity-display" class="data-display">Waiting for humidity data...</div>
+            </div>
+
+            <div class="bottom-charts">
+                <div class="chart-wrapper">
+                    <canvas id="altitude-chart"></canvas>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="pressure-chart"></canvas>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="humidity-chart"></canvas>
+                </div>
+            </div>
+            <div id="data-display-container">
+                <div id="gyro-display" class="data-display">Waiting for AQI data...</div>
+                <div id="accel-display" class="data-display">Waiting for Smoke data...</div>
+                <div id="temp-display" class="data-display">Waiting for Speed data...</div>
+            </div>
+            <div class="bottom-charts">
+                <div class="chart-wrapper">
+                    <canvas id="AQI-chart"></canvas>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="smoke-chart"></canvas>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="speed-chart"></canvas>
+                </div>
+            </div>
+                <div class="videomap">
+                    <div class="video">
+                        <video id="video-feed" autoplay></video>
+                    </div>
+                    <div class="map-container">
+                        <div id="map"></div>
+                    </div>
+           
+            </div>
+            <!-- <div class="videomap">
+                <div class="video">
+                    <video id="video-feed" width="100%" height="100%" autoplay></video>
+                </div>
+                <div class="map-container">
+                    <div id="map">map</div>
+                </div>
+            </div> -->
+
+            <!-- <div class="videomap">
+                <div class="video">Waiting for Video Feed</div>
+                
+                <div class="video">
+                    <video id="video-feed" width="640" height="480" autoplay></video>
+                </div>
+                <div class="map-container">
+                    <div class="map">MAP</div>
+                </div>
+            </div> -->
+        </div>
+        </div>
     </main>
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
     <script src="renderer.js"></script>
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            await initializeMap();
+            getCanSatCameraStream();
+        });
+
+        async function initializeMap() {
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            const map = L.map('map').setView([28.704060, 77.102493], 19);
+            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                maxZoom: 19
+            }).addTo(map);
+
+            const customIcon = L.icon({
+                iconUrl: 'round.png',
+                iconSize: [20, 20],
+                iconAnchor: [10, 10],
+                popupAnchor: [0, -10],
+            });
+
+            const coordinates = [
+            { lat: 28.704060, lon: 77.102493 },
+            { lat: 28.705060, lon: 77.103493 },
+            { lat: 28.706060, lon: 77.104493 },
+            { lat: 28.707060, lon: 77.105493 },
+            { lat: 28.708060, lon: 77.106493 },
+            { lat: 28.709060, lon: 77.107493 },
+            { lat: 28.710060, lon: 77.108493 },
+            { lat: 28.711060, lon: 77.109493 },
+            { lat: 28.712060, lon: 77.110493 },
+            { lat: 28.713060, lon: 77.111493 }
+                // Add more coordinates as needed
+            ];
+
+            let index = 0;
+
+            function placeMarker() {
+                if (index < coordinates.length) {
+                    const { lat, lon } = coordinates[index];
+                    L.marker([lat, lon], { icon: customIcon }).addTo(map)
+                        .bindPopup(`Latitude: ${lat}, Longitude: ${lon}`).openPopup();
+                    index++;
+                } else {
+                    clearInterval(markerInterval);
+                }
+            }
+            const markerInterval = setInterval(placeMarker, 1000);
+        }
+        async function getCanSatCameraStream() {
+            const videoFeed = document.getElementById('video-feed');
+            try {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const videoDevices = devices.filter(device => device.kind === 'videoinput');
+                const canSatDevice = videoDevices.find(device => device.label.includes('USB2.0 PC Camera'));
+
+                if (canSatDevice) {
+                    const stream = await navigator.mediaDevices.getUserMedia({
+                        video: { deviceId: canSatDevice.deviceId }
+                    });
+                    videoFeed.srcObject = stream;
+                } else {
+                    console.error('CanSat camera ("USB2.0 PC Camera") not found.');
+                }
+            } catch (error) {
+                console.error('Error accessing video stream:', error);
+            }
+        }
+    </script>
 </body>
 </html>
