@@ -6,7 +6,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Serial Port Plotter</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" /><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Air Quality Map</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Air Quality Interface</h1>
+    </header>
+    <main>
+        <div id="controls">
+            <select id="port-select"></select>
+            <button id="connect-button">Connect</button>
+            <button id="export-button">Export Data</button>
+        </div>
+        <div id="error-message" style="display: none; color: red;"></div>
+        <div id="map"></div> <!-- Changed from map-container to map -->
+    </main>
+    <script src="renderer.js"></script>
+</body>
+</html>
+
     <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
     <style>
         html,
